@@ -7,7 +7,7 @@ fun main(args : Array<String>) {
 
   //val rectangle = RectangleExample()
 
-    val modelTest: Model = Model()
+    val modelTest: Model = Model(1,1)
     println("list is empty? " + modelTest.getList().isEmpty())
     val rm: RenderModel = RenderModel(pModel = modelTest)
 

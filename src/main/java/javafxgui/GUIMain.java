@@ -64,7 +64,7 @@ public class GUIMain extends Application {
         // window
         window = primaryStage;
         window.setTitle("Set Acquisition");
-        int windowSizeX = 300;
+        int windowSizeX = 400;
         int windowSizeY = 500;
 
         // close request handling
@@ -76,10 +76,16 @@ public class GUIMain extends Application {
         // spinner X and Y
         Label spinnerTitle = new Label("Tile configuration:");
         Spinner<Integer> xSpinner = new Spinner<>(1, 10, 1);
-        xSpinner.valueProperty().addListener((r,p,q) -> model.changeX(q.intValue()));
+       // xSpinner.valueProperty().addListener((r,p,q) -> model.changeX(q.intValue()));
         Label xLabel = new Label("x");
         Spinner<Integer> ySpinner = new Spinner<>(1, 10, 1);
-        ySpinner.valueProperty().addListener((r,p,q) -> model.changeY(q.intValue()));
+       // ySpinner.valueProperty().addListener((r,p,q) -> model.changeY(q.intValue()));
+
+        Button updateButton = new Button("Update");
+        updateButton.setOnAction(e -> {model.recalculate(xSpinner.valueProperty().get(), ySpinner
+                .valueProperty().get());
+            System.out.println("x and y are: " + xSpinner.valueProperty().get() + " " + ySpinner
+                    .valueProperty().get());});
 
         // updater size sliders
         Label updaterSize = new Label("Updater Size:");
@@ -134,7 +140,7 @@ public class GUIMain extends Application {
         HBox spinners = new HBox();
         spinners.setPadding(new Insets(10, 10, 10, 10));
         spinners.setSpacing(8);
-        spinners.getChildren().addAll(xSpinner, xLabel, ySpinner);
+        spinners.getChildren().addAll(xSpinner, xLabel, ySpinner, updateButton);
         spinners.setAlignment(Pos.CENTER);
 
         // updater size sliders

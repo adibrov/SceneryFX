@@ -18,55 +18,86 @@ class Model {
 
     private var modelList = CopyOnWriteArrayList<Node>()
 
-    init {
-        var rectSize = 0.5f
-        var rect = Box(GLVector(rectSize, rectSize, rectSize))
-        val rectMat = Material()
-        rectMat.ambient = GLVector(1.0f, 0.0f, 0.0f)
-        rectMat.diffuse = GLVector(0.0f, 1.0f, 0.0f)
-        rectMat.specular = GLVector(1.0f, 1.0f, 1.0f)
-        rect.position = GLVector(0.0f, 0.0f, 0.0f)
-        rect.material = rectMat
+    constructor (X:Int, Y:Int) {
+        for (i in 0..X-1) {
+            for (j in 0..Y-1) {
+                var rectSize = 0.5f
+                var rect = Box(GLVector(rectSize, rectSize, rectSize))
+                val rectMat = Material()
+                rectMat.ambient = GLVector(1.0f, 0.0f, 0.0f)
+                rectMat.diffuse = GLVector(0.0f, 1.0f, 0.0f)
+                rectMat.specular = GLVector(1.0f, 1.0f, 1.0f)
+                rect.position = GLVector(1.0f * j * rectSize, 1.0f * i*rectSize, 0.0f)
+                rect.material = rectMat
+                modelList.add(rect)
+            }
 
-        modelList.add(rect)
+        }
+
+        notifyListener()
+
+    }
+
+    fun recalculate (X:Int, Y:Int) {
+        val listAux = CopyOnWriteArrayList<Node>()
+        for (i in 0..X-1) {
+            for (j in 0..Y-1) {
+                var rectSize = 0.5f
+                var rect = Box(GLVector(rectSize, rectSize, rectSize))
+                val rectMat = Material()
+                rectMat.ambient = GLVector(1.0f, 0.0f, 0.0f)
+                rectMat.diffuse = GLVector(0.0f, 1.0f, 0.0f)
+                rectMat.specular = GLVector(1.0f, 1.0f, 1.0f)
+                rect.position = GLVector(1.0f * j * rectSize, 1.0f * i*rectSize, 0.0f)
+                rect.material = rectMat
+                listAux.add(rect)
+            }
+
+        }
+        modelList = listAux
+        notifyListener()
 
     }
 
     fun changeX(newXSize:Int){
-        for (i in 0..ySize-1){
-            for (j in xSize..newXSize-1){
+        for (i in 0..ySize-1) {
+            for (j in xSize..newXSize - 1) {
                 var rectSize = 0.5f
                 var rect = Box(GLVector(rectSize, rectSize, rectSize))
                 val rectMat = Material()
                 rectMat.ambient = GLVector(1.0f, 0.0f, 0.0f)
                 rectMat.diffuse = GLVector(0.0f, 1.0f, 0.0f)
                 rectMat.specular = GLVector(1.0f, 1.0f, 1.0f)
-                rect.position = GLVector(1.0f*j*rectSize, 1.0f*i, 0.0f)
+                rect.position = GLVector(1.0f * j * rectSize, 1.0f * i*rectSize, 0.0f)
                 rect.material = rectMat
                 modelList.add(rect)
             }
 
         }
+        xSize = newXSize
         notifyListener()
     }
 
     fun changeY(newYSize:Int){
-        for (i in 0..xSize-1){
-            for (j in ySize..newYSize-1){
+        for (i in ySize..newYSize-1){
+            for (j in 0..xSize-1){
                 var rectSize = 0.5f
                 var rect = Box(GLVector(rectSize, rectSize, rectSize))
                 val rectMat = Material()
                 rectMat.ambient = GLVector(1.0f, 0.0f, 0.0f)
                 rectMat.diffuse = GLVector(0.0f, 1.0f, 0.0f)
                 rectMat.specular = GLVector(1.0f, 1.0f, 1.0f)
-                rect.position = GLVector(1.0f*j, 1.0f*j*rectSize, 0.0f)
+                rect.position = GLVector(1.0f*j*rectSize, 1.0f*i*rectSize, 0.0f)
                 rect.material = rectMat
                 modelList.add(rect)
             }
 
         }
+        ySize = newYSize
         notifyListener()
     }
+
+
 
     fun getList():CopyOnWriteArrayList<Node>{
         return modelList
