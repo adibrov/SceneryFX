@@ -11,14 +11,18 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 
 class Model {
-    private var xSize = 1
-    private var ySize = 1
+    private var xSize = 5
+    private var ySize = 5
     private var ListenerList: CopyOnWriteArrayList<Listener> = CopyOnWriteArrayList()
+    private var cb = CursorBox()
+
+
 
 
     private var modelList = CopyOnWriteArrayList<Node>()
 
     constructor (X:Int, Y:Int) {
+        modelList.add(cb.getHolder())
         for (i in 0..X-1) {
             for (j in 0..Y-1) {
                 var rectSize = 0.5f
@@ -40,6 +44,7 @@ class Model {
 
     fun recalculate (X:Int, Y:Int) {
         val listAux = CopyOnWriteArrayList<Node>()
+        listAux.add(cb.getHolder())
         for (i in 0..X-1) {
             for (j in 0..Y-1) {
                 var rectSize = 0.5f
@@ -109,8 +114,12 @@ class Model {
         }
     }
 
-    public fun registerListener(sth:Listener) {
+    fun registerListener(sth:Listener) {
         this.ListenerList.add(sth)
+    }
+
+    fun getCursorBox(): CursorBox{
+        return cb
     }
 
 

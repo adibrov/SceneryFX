@@ -1,5 +1,6 @@
 package javafxgui;
 
+import cleargl.GLVector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -75,11 +76,13 @@ public class GUIMain extends Application {
 
         // spinner X and Y
         Label spinnerTitle = new Label("Tile configuration:");
-        Spinner<Integer> xSpinner = new Spinner<>(1, 10, 1);
+        Spinner<Integer> xSpinner = new Spinner<>(1, 10, 5);
        // xSpinner.valueProperty().addListener((r,p,q) -> model.changeX(q.intValue()));
         Label xLabel = new Label("x");
-        Spinner<Integer> ySpinner = new Spinner<>(1, 10, 1);
+        Spinner<Integer> ySpinner = new Spinner<>(1, 10, 5);
        // ySpinner.valueProperty().addListener((r,p,q) -> model.changeY(q.intValue()));
+        xSpinner.setMaxWidth(windowSizeX/4);
+        ySpinner.setMaxWidth(windowSizeX/4);
 
         Button updateButton = new Button("Update");
         updateButton.setOnAction(e -> {model.recalculate(xSpinner.valueProperty().get(), ySpinner
@@ -91,22 +94,23 @@ public class GUIMain extends Application {
         Label updaterSize = new Label("Updater Size:");
 
         Slider sizeXslider = new Slider();
-        sizeXslider.setMin(-5);
+        sizeXslider.setMin(0);
         sizeXslider.setMax(5);
-        sizeXslider.setValue(0);
-//        sizeXslider.valueProperty().addListener(scr);
+        sizeXslider.setValue(2);
+        sizeXslider.valueProperty().addListener(e -> model.getCursorBox().updateSizeX((float)sizeXslider.getValue()));
 
         Slider sizeYslider = new Slider();
-        sizeYslider.setMin(-5);
+        sizeYslider.setMin(0);
         sizeYslider.setMax(5);
-        sizeYslider.setValue(0);
-      //  sizeYslider.valueProperty().addListener(scr);
+        sizeYslider.setValue(2);
+        sizeYslider.valueProperty().addListener(e -> model.getCursorBox().updateSizeY(
+                (float)sizeYslider.getValue()));
 
         Slider sizeZslider = new Slider();
-        sizeZslider.setMin(-5);
+        sizeZslider.setMin(0);
         sizeZslider.setMax(5);
-        sizeZslider.setValue(0);
-    //    sizeZslider.valueProperty().addListener(scr);
+        sizeZslider.setValue(2);
+        sizeZslider.valueProperty().addListener(e -> model.getCursorBox().updateSizeZ((float)sizeZslider.getValue()));
 
         // updater position sliders
         Label updaterPos = new Label("Updater Position:");
@@ -115,19 +119,21 @@ public class GUIMain extends Application {
         posXslider.setMin(-5);
         posXslider.setMax(5);
         posXslider.setValue(0);
-   //     posXslider.valueProperty().addListener(scr);
+
+        posXslider.valueProperty().addListener(e -> model.getCursorBox().updateX((float)posXslider.getValue()));
 
         Slider posYslider = new Slider();
         posYslider.setMin(-5);
         posYslider.setMax(5);
         posYslider.setValue(0);
-   //     posYslider.valueProperty().addListener(scr);
+        posYslider.valueProperty().addListener(e -> {model.getCursorBox().updateY((float)posYslider.getValue());
+        System.out.println("y slider is; " + posYslider.getValue());});
 
         Slider posZslider = new Slider();
         posZslider.setMin(-5);
         posZslider.setMax(5);
         posZslider.setValue(0);
-      //  posZslider.valueProperty().addListener(scr);
+        posZslider.valueProperty().addListener(e -> model.getCursorBox().updateZ((float)posZslider.getValue()));
 
         // layout
         // main vbox

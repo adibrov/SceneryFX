@@ -22,6 +22,7 @@ List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
     private val model: Model
 
     private fun updateModelChildren(pUpdatedModel: CopyOnWriteArrayList<Node>){
+
         scene.children = pUpdatedModel
     }
 
