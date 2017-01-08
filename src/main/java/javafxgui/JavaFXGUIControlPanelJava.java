@@ -1,6 +1,5 @@
 package javafxgui;
 
-import coremem.enums.NativeTypeEnum;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -15,19 +14,20 @@ import javafx.scene.control.Spinner;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import sceneryfx.AcquisitionGUIModel;
+import sceneryfx.AcquisitionGUIModelJava;
 import sceneryfx.ClearVolumeUnit;
-import sceneryfx.RenderModel;
-import sceneryfx.acquisitionGUIModel;
 
+import static javafx.application.Application.launch;
 
 /**
- * Created by dibrov on 13/12/16.
+ * Created by dibrov on 08/01/17.
  */
-public class GUIMain extends Application {
+public class JavaFXGUIControlPanelJava extends Application{
 
     Button button;
     Stage window;
-    acquisitionGUIModel model;
+    AcquisitionGUIModelJava model;
     static long locX = 0;
     static long locY = 0;
     ClearVolumeUnit cv;
@@ -52,13 +52,9 @@ public class GUIMain extends Application {
     Stage stage;
 
 
-    public GUIMain(acquisitionGUIModel model, ClearVolumeUnit cv) {
+    public JavaFXGUIControlPanelJava(AcquisitionGUIModelJava model, ClearVolumeUnit cv) {
         this.model = model;
         this.cv = cv;
-
-
-
-
 
     }
 
@@ -68,7 +64,7 @@ public class GUIMain extends Application {
 
     }
 
-    public static void start(acquisitionGUIModel model, ClearVolumeUnit cv) {
+    public static void start(AcquisitionGUIModelJava model, ClearVolumeUnit cv) {
         new JFXPanel(); // initializes JavaFX environment
 
         Platform.runLater(new Runnable() {
@@ -76,23 +72,12 @@ public class GUIMain extends Application {
             public void run() {
 
                 Stage stage = new Stage();
-                GUIMain main = new GUIMain(model, cv);
+                JavaFXGUIControlPanelJava main = new JavaFXGUIControlPanelJava(model, cv);
                 main.start(stage);
 
 
             }
         });
-
-
-
-
-        RenderModel rm = new RenderModel(model, null, null, null);
-        rm.main();
-
-
-
-
-
 
     }
 
@@ -165,12 +150,12 @@ public class GUIMain extends Application {
         posXslider.setValue(0);
 
         posXslider.valueProperty().addListener(e ->
-        {
-            model.getCursorBox().updateX((float) posXslider.getValue());
-         //   updX((int)((posXslider.getValue() + 5 * 0.1 * 2000)));
-         //   cvu.reload(model.getSubStack(locX, locY));
+                {
+                    model.getCursorBox().updateX((float) posXslider.getValue());
+                    //   updX((int)((posXslider.getValue() + 5 * 0.1 * 2000)));
+                    //   cvu.reload(model.getSubStack(locX, locY));
 
-        }
+                }
         );
 
         Slider posYslider = new Slider();
@@ -179,7 +164,7 @@ public class GUIMain extends Application {
         posYslider.setValue(0);
         posYslider.valueProperty().addListener(e -> {
             model.getCursorBox().updateY((float) posYslider.getValue());
-        //    updY((int)((posYslider.getValue() + 5 * 0.1 * 4000)));
+            //    updY((int)((posYslider.getValue() + 5 * 0.1 * 4000)));
             //cv.reload(model.getSubStack(locX, locY));
             System.out.println("y slider is; " + posYslider.getValue());
         });
@@ -262,7 +247,6 @@ public class GUIMain extends Application {
         if (ans)
             window.close();
     }
-
 
 
 

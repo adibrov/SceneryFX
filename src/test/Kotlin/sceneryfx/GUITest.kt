@@ -2,12 +2,12 @@ package sceneryfx
 
 import coremem.enums.NativeTypeEnum
 import io.scif.img.ImgOpener
-import javafxgui.GUIMain
+import javafxgui.JavaFXGUIControlPanelKotlin
 import net.imglib2.img.Img
 import net.imglib2.type.numeric.integer.UnsignedByteType
 import org.junit.Test
 import sceneryfx.RenderModel
-import sceneryfx.acquisitionGUIModel
+import sceneryfx.AcquisitionGUIModel
 import kotlin.concurrent.thread
 
 /**
@@ -22,7 +22,7 @@ import kotlin.concurrent.thread
             Img<UnsignedByteType>
 
 
-    val modelTest: acquisitionGUIModel = acquisitionGUIModel(X = Integer(5), Y = Integer(5), pModelStack =  bigStack)
+    val modelTest: AcquisitionGUIModel = AcquisitionGUIModel(X = Integer(5), Y = Integer(5), pModelStack =  bigStack)
     println("list is empty? " + modelTest.getNodeList().isEmpty())
 
     val cvu = ClearVolumeUnit(modelTest.getSubStack(0, 0), 100, 100, 50,
@@ -30,8 +30,8 @@ import kotlin.concurrent.thread
 
     cvu.initializeAndShow()
 
-    var gm = GUIMain(modelTest, cvu)
-    GUIMain.start(modelTest, cvu)
+    var gm = JavaFXGUIControlPanelKotlin(modelTest, cvu)
+    JavaFXGUIControlPanelKotlin.start(modelTest, cvu)
 
 
 

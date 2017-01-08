@@ -14,12 +14,12 @@ import kotlin.concurrent.thread
  * Created by dibrov on 14/12/16.
  */
 
-class RenderModel(pModel: acquisitionGUIModel, pRenderer: Renderer? = null, pCamera: Camera? = null, pLights:
+class RenderModel(pModel: AcquisitionGUIModel, pRenderer: Renderer? = null, pCamera: Camera? = null, pLights:
 List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
 
     private val cam: Node
     private val lights: List<Node>
-    private val model: acquisitionGUIModel
+    private val model: AcquisitionGUIModel
 
     private fun updateModelChildren(pUpdatedModel: CopyOnWriteArrayList<Node>){
 
@@ -55,6 +55,7 @@ List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
             cam.position = GLVector(0.0f, 0.0f, 15.0f)
             cam.perspectiveCamera(50.0f, windowWidth.toFloat(), windowHeight.toFloat())
             cam.active = true
+
         } else {
             cam = pCamera
 

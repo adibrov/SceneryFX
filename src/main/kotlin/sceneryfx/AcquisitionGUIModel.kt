@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Created by dibrov on 14/12/16.
  */
 
-class acquisitionGUIModel (pModelStack:Img<UnsignedByteType> , X:Integer, Y:Integer) : Model() {
+class AcquisitionGUIModel(pModelStack:Img<UnsignedByteType>, X:Integer, Y:Integer) : Model() {
 
     private var cb = CursorBox()
     val bt: UnsignedByteType? = UnsignedByteType()
