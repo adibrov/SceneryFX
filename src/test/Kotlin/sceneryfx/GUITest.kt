@@ -18,7 +18,7 @@ import kotlin.concurrent.thread
 
     //val rectangle = RectangleExample()
 
-    var bigStack: Img<UnsignedByteType> = ImgOpener().openImgs("./sandbox/pics/149_fused.tif").get(0) as
+    var bigStack: Img<UnsignedByteType> = ImgOpener().openImgs("./sandbox/pics/WingDiskStack8bit.tif").get(0) as
             Img<UnsignedByteType>
 
 
@@ -33,6 +33,8 @@ import kotlin.concurrent.thread
     var gm = JavaFXGUIControlPanelKotlin(modelTest, cvu)
     JavaFXGUIControlPanelKotlin.start(modelTest, cvu)
 
+    val tRenderModel = RenderModel(modelTest, null, null, null)
+    tRenderModel.main()
 
 
 

@@ -3,7 +3,12 @@ package sceneryfx;
 import cleargl.GLVector;
 import graphics.scenery.scenery.*;
 import graphics.scenery.scenery.backends.Renderer;
+import graphics.scenery.scenery.controls.InputHandler;
+import graphics.scenery.scenery.controls.behaviours.ArcballCameraControl;
+import graphics.scenery.scenery.controls.behaviours.FPSCameraControl;
+import org.scijava.ui.behaviour.ClickBehaviour;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -124,6 +129,59 @@ public class RenderModelJava extends SceneryDefaultApplication {
             }
         };
         th.run();
+    }
+
+
+    @Override
+    public void inputSetup() {
+        super.inputSetup();
+
+        GLVector target = new GLVector(0.0f, 0.0f, 0.0f);
+        InputHandler inputHandler = (InputHandler) (this.getHub().get(SceneryElement.INPUT));
+        ArcballCameraControl targetArcball = new ArcballCameraControl("mouse_control", this.getScene().findObserver
+                (),
+                this.getWindowWidth(), this.getWindowHeight(),
+                target);
+        FPSCameraControl fpsControl = new FPSCameraControl("mouse_control", this.getScene().findObserver(), this
+                        .getWindowWidth(),
+                this.getWindowHeight());
+
+        ClickBehaviour toggleControlMode = new ClickBehaviour() {
+            String currentMode = "fps";
+
+            @Override
+            public void click(int x, int y) {
+                if (currentMode.startsWith("fps")) {
+                    targetArcball.setTarget(target);
+
+                    inputHandler.addBehaviour("mouse_control", targetArcball);
+                    inputHandler.addBehaviour("scroll_arcball", targetArcball);
+                    inputHandler.addKeyBinding("scroll_arcball", "scroll");
+
+                    currentMode = "arcball";
+                } else {
+                    inputHandler.addBehaviour("mouse_control", fpsControl);
+                    inputHandler.removeBehaviour("scroll_arcball");
+
+                    currentMode = "fps";
+                }
+
+                System.out.println("Switched to $currentMode control");
+            }
+
+
+        };
+
+        inputHandler.addBehaviour("toggle_control_mode", toggleControlMode);
+        inputHandler.addKeyBinding("toggle_control_mode", "C");
+
+
+    }
+
+    public void main() {
+        System.out.println("calling main of RenderModel");
+        super.main();
+
     }
 
 

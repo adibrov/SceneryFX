@@ -21,7 +21,7 @@ public class GUITests {
         try {
             // Loading a stack for the model
             Img<UnsignedByteType> tModelStack = (Img<UnsignedByteType>) new ImgOpener().openImgs("" +
-                    "./pics/149_fused" +
+                    "./pics/WingDiskStack8bit" +
                     ".tif").get(0);
 
             // Creating a model
