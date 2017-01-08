@@ -5,5 +5,5 @@ package sceneryfx
  */
 
 interface Listener {
-    fun notifyMe()
+    fun fire()
 }

@@ -1,0 +1,227 @@
+buildscript {
+
+	ext.kotlin_version = '1.0.5-2'
+	ext.dokka_version = '0.9.10'
+	//ext.lwjgl_version = '3.1.1-SNAPSHOT'
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        //classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.7.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+    }
+}
+
+plugins {
+  id "com.jfrog.bintray" version "1.2"
+  id "us.kirchmeier.capsule" version "0.9.0"
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'c'
+apply plugin: 'cpp'
+apply plugin: 'idea'
+//apply plugin: 'javafx-gradle-plugin'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+
+
+[
+	compileJava,
+	compileTestJava
+]*.options*.encoding = 'UTF-8'
+
+
+
+
+
+
+//***********************************************************************************
+// JAVA CODE BUILDING
+
+sourceSets
+{
+	main
+	{
+		java
+		{ srcDir 'src/main/java' }
+	//	resources
+	//	{  srcDir 'data' }
+
+		kotlin
+		{srcDir 'src/main/kotlin'}
+	//	resources
+	//	{srcDir "src/main/kotlin"}
+	}
+	test
+	{
+		java
+		{ srcDir 'src/test/java' }
+		resources
+		{  srcDir 'src/test/pics' }
+
+		kotlin
+		{srcDir 'src/test/kotlin'}
+		resources
+		{srcDir "src/test/pics"}
+	}
+}
+
+javadoc { options.charSet = 'UTF-8' }
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// test
+// {
+// 	testLogging.showStandardStreams = true
+// 	testLogging
+// 	{ events "passed", "skipped", "failed" }
+
+// 	exclude '**/demo/**'
+// 	exclude '**/run/**'
+
+// 	maxHeapSize = "4G"
+// }
+
+
+// def versionOverrides = [
+// 	"org.jdom:jdom2": "2.0.5"
+// ]
+
+// configurations.all
+// {
+// 	// check for updates every build
+// 	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+// 	resolutionStrategy.force("org.jdom:jdom2:2.0.5")
+// }
+
+
+
+dependencies
+{
+
+	compile ("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    compile ("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
+
+	compile 'commons-io:commons-io:2.5'
+ 	compile 'commons-lang:commons-lang:2.6'
+	
+	// compile 'net.sf.trove4j:trove4j:3.0.3'
+	// compile 'args4j:args4j:2.0.29'
+	compile 'com.apple:AppleJavaExtensions:1.4'
+	// compile 'com.miglayout:miglayout:3.7.4'
+	compile ('net.imglib2:pom-imglib2:5.2.1') {transitive = true;changing=true}
+	// compile ('net.clearvolume:ClearVolume:1.0-SNAPSHOT') {
+	// 	transitive = true
+	// 	//exclude module: 'cleargl'
+	// } 
+	//compile ('net.clearvolume:clearvolume:1.3.20') {transitive = true;changing=true}
+	//compile "org.lwjgl:lwjgl:$lwjgl_version:natives-macos"
+	// compile ('graphics.scenery:scenery:1.0.0-SNAPSHOT')  {
+	// 	transitive = true;
+	// 	//exclude module: 'cleargl'
+	// }
+	// compile 'net.imglib2:imagelib2:[0:]'
+	    // imglib2:
+    compile ('net.imglib2:imglib2:[2.2.0,)'){transitive = true}
+    compile ('net.imglib2:imglib2-ui:[2.0.0-beta-28,)'){transitive = true}
+    compile ('net.imglib2:imglib2-ij:[2.0.0-beta-30,)'){transitive = true}
+    compile ('net.imglib2:imglib2-algorithm:[0.2.1,)'){transitive = true}
+
+     // scifio:
+    compile ('io.scif:pom-scifio:5.8.0'){transitive = true}
+    compile ('io.scif:scifio:0.21.0'){transitive = true}
+
+    
+    //compile(project(':ClearGL'))//{transitive=false}
+    compile(project(':ClearVolume')){transitive=true}
+    compile(project(':scenery')){transitive=true}
+    //compile project (':bigdataviewer-vistools')
+    compile('sc.fiji:bigdataviewer-vistools:1.0.0-beta-4'){transitive=true}
+
+
+
+	
+	//compile5 'net.clearvolume:cleargl:2.0.0-SNAPSHOT'
+	//compile6 'net.clearvolume:cleargl:1.0.18'
+//configurations.compile1{
+		// resolutionStrategy{
+		// 	eachDependency { DependencyResolveDetails details ->
+	 //      //specifying a fixed version for all libraries with 'org.gradle' group
+	 //      	if (details.requested.module == 'cleargl') {
+	 //        	details.useVersion '1.0.18'
+  //    		}
+  //  		}	
+		// }
+		
+//	}
+
+	
+	// // Java Mail:
+ //  compile ('javax.mail:mail:1.5.0-b01'){transitive= true; changing= true}
+	
+	// // BadTrack:
+ //  compile ('net.clearcontrol:BadTrack:[0.1.3,)'){transitive= true; changing= true}
+	
+	// // CoreMem:
+   //compile ('net.coremem:CoreMem:[0.3.2]'){transitive= true; changing= true}
+
+ //  //ClearCL:
+ //  compile ('net.clearvolume:clearcl:[0.3.20,)') {transitive= true; changing= true}
+
+ //  //ClearAudio:
+ //  compile ('net.clearvolume:clearaudio:[1.0.2,)') {transitive= true; changing= true}
+
+ //  //ClearGL:
+	// compile ('net.clearvolume:cleargl:[1.0.18,)')  {transitive= true; changing= true}
+
+	// compile group: 'junit', name: 'junit', version: '4.12'
+	// testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}
+
+repositories
+{
+	mavenCentral()
+
+	mavenLocal()
+
+	maven { url  "http://dl.bintray.com/clearvolume/ClearVolume"  }
+	maven { url  "http://oss.sonatype.org/content/groups/public" }
+	maven { url  "http://dl.bintray.com/clearcontrol/ClearControl" }
+	maven { url  "https://oss.sonatype.org/content/repositories/snapshots" }
+	maven { url  "http://maven.imagej.net/content/groups/public" }
+	maven
+    { url "http://nativelibs4java.sourceforge.net/maven" }
+    maven
+    { url "http://maven.imagej.net/content/repositories/snapshots" }
+
+
+}
+
+
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+	allprojects {
+		tasks.withType(Javadoc) {
+			options.addStringOption('Xdoclint:none', '-quiet')
+		}
+	}
+}

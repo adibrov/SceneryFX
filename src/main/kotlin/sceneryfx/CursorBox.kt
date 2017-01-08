@@ -1,10 +1,10 @@
 package sceneryfx
 
 import cleargl.GLVector
-import scenery.Box
-import scenery.Material
-import scenery.Mesh
-import scenery.Node
+import graphics.scenery.scenery.Box
+import graphics.scenery.scenery.Material
+import graphics.scenery.scenery.Mesh
+import graphics.scenery.scenery.Node
 
 /**
  * Created by dibrov on 15/12/16.
@@ -49,7 +49,7 @@ class CursorBox(pPosition: GLVector = GLVector(0.0f, 0.0f, 0.0f), pSize: GLVecto
 
     fun notifyListeners() {
         for (listener in listenerList) {
-            listener.notifyMe()
+            listener.fire()
         }
     }
 

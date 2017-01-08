@@ -13,15 +13,14 @@ import javafx.event.EventHandler
 
 import org.scijava.ui.behaviour.ClickBehaviour
 //import sample.Main1
-import scenery.*
-import scenery.backends.Renderer
-//import scenery.backends.opengl.DeferredLightingRenderer
-import scenery.controls.InputHandler
-import scenery.controls.behaviours.ArcballCameraControl
-import scenery.controls.behaviours.FPSCameraControl
-import scenery.repl.REPL
+import graphics.scenery.scenery.*;
+import graphics.scenery.scenery.backends.Renderer
+import graphics.scenery.scenery.controls.InputHandler
+import graphics.scenery.scenery.controls.behaviours.ArcballCameraControl
+import graphics.scenery.scenery.controls.behaviours.FPSCameraControl
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.thread
+
 
 
 

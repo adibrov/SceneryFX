@@ -1,12 +1,17 @@
+/**
+ * Created by dibrov on 27/12/16.
+ */
+
+
 package sceneryfx
 
 
+import org.junit.Test;
 import cleargl.GLVector
 import graphics.scenery.scenery.*
 import graphics.scenery.scenery.backends.Renderer
 import graphics.scenery.scenery.repl.REPL
 import kotlin.concurrent.thread
-
 
 /**
  * Created by dibrov on 13/12/16.
@@ -14,7 +19,7 @@ import kotlin.concurrent.thread
 
 
 
-class TexturedCubeExample : SceneryDefaultApplication("TexturedCubeExample") {
+class TexturedCubeExampleTest : SceneryDefaultApplication("TexturedCubeExample") {
     override fun init() {
         renderer = Renderer.createRenderer(applicationName, scene, 512, 512)
         hub.add(SceneryElement.RENDERER, renderer!!)
@@ -68,7 +73,7 @@ class TexturedCubeExample : SceneryDefaultApplication("TexturedCubeExample") {
         repl?.showConsoleWindow()
     }
 
-    override fun main() {
+    @Test override fun main() {
         super.main()
     }
 }

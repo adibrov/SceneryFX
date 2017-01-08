@@ -2,11 +2,11 @@ package sceneryfx
 
 import cleargl.GLVector
 import org.scijava.ui.behaviour.ClickBehaviour
-import scenery.*
-import scenery.backends.Renderer
-import scenery.controls.InputHandler
-import scenery.controls.behaviours.ArcballCameraControl
-import scenery.controls.behaviours.FPSCameraControl
+import graphics.scenery.scenery.*
+import graphics.scenery.scenery.backends.Renderer
+import graphics.scenery.scenery.controls.InputHandler
+import graphics.scenery.scenery.controls.behaviours.ArcballCameraControl
+import graphics.scenery.scenery.controls.behaviours.FPSCameraControl
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.thread
 
@@ -14,12 +14,12 @@ import kotlin.concurrent.thread
  * Created by dibrov on 14/12/16.
  */
 
-class RenderModel(pModel: Model, pRenderer: Renderer? = null, pCamera: Camera? = null, pLights:
+class RenderModel(pModel: acquisitionGUIModel, pRenderer: Renderer? = null, pCamera: Camera? = null, pLights:
 List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
 
     private val cam: Node
     private val lights: List<Node>
-    private val model: Model
+    private val model: acquisitionGUIModel
 
     private fun updateModelChildren(pUpdatedModel: CopyOnWriteArrayList<Node>){
 
@@ -29,15 +29,15 @@ List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
     init {
 
 
-        if (pModel.getList().isEmpty()) {
+        if (pModel.getNodeList().isEmpty()) {
             throw Exception("Refuse to render an empty model!")
         } else {
             model = pModel
         }
 
         val updateListener = object :Listener {
-            override fun notifyMe() {
-                updateModelChildren(model.getList())
+            override fun fire() {
+                updateModelChildren(model.getNodeList())
             }
         }
 
@@ -84,7 +84,7 @@ List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
         hub.add(SceneryElement.RENDERER, renderer!!)
         scene.addChild(cam)
 
-        for (item in model.getList()) {
+        for (item in model.getNodeList()) {
             scene.addChild(item)
         }
 
@@ -146,7 +146,7 @@ List<PointLight>? = null) : SceneryDefaultApplication("RenderModel") {
     }
 
     override fun main() {
-
+        println("calling main of RenderModel")
         super.main()
 
     }
