@@ -23,7 +23,7 @@ public class RectangleLabel {
 
     public RectangleLabel() {
         mRectangle = new Rectangle(0,0,0,0);
-        mColor = new Color(0,1,1,0.5f);
+        mColor = new Color(0,1,0,0.5f);
         mLineWidth = 2.0f;
     }
 
