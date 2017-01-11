@@ -4,6 +4,7 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOverlay;
+import bdv.viewer.animate.OverlayAnimator;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import net.imglib2.img.Img;
@@ -52,7 +53,7 @@ public class StackSelectionLabel {
         mLabelLast = new RectangleLabel();
         mLabelInterm = new RectangleLabel();
         mLabelLast.setColor(new Color(0, 0, 1, 0.5f));
-        mLabelInterm.setColor(new Color(1, 1, 1, 0.25f));
+        mLabelInterm.setColor(new Color(0, 1, 1, 0.3f));
 
         this.mDragBehaviour = new DragBehaviour() {
             @Override
@@ -63,8 +64,12 @@ public class StackSelectionLabel {
                     x0 = i;
                     y0 = i1;
                     mRectangle.setBounds(x0, y0, 0, 0);
-                    mLabelFirst.setRectangle(mRectangle);
+                   // mLabelFirst.setRectangle(mRectangle);
                     mBdvHandle.getViewerPanel().getDisplay().repaint();
+                }
+                else
+                {
+
                 }
 
             }
@@ -75,7 +80,7 @@ public class StackSelectionLabel {
                     x1 = i;
                     y1 = i1;
                     mRectangle.setBounds(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0));
-                    mLabelFirst.setRectangle(mRectangle);
+                    //mLabelFirst.setRectangle(mRectangle);
                     mBdvHandle.getViewerPanel().getDisplay().repaint();
                 }
             }
@@ -103,32 +108,32 @@ public class StackSelectionLabel {
                         g.setColor(mLabelFirst.getColor());
                         g.fill(mLabelFirst.getRectangle());
                         g.setStroke(new BasicStroke(mLabelFirst.getLineWidth()));
-                        g.draw(mLabelFirst.getRectangle());
+                        g.draw(mRectangle);
                     }
                     else if (lTimePointIndex == mLabelLast.getmTimePointIndex()) {
                         g.setColor(mLabelLast.getColor());
                         g.fill(mLabelLast.getRectangle());
                         g.setStroke(new BasicStroke(mLabelLast.getLineWidth()));
-                        g.draw(mLabelLast.getRectangle());
+                        g.draw(mRectangle);
                     }
                     else if (mLabelFirst.getmTimePointIndex() < lTimePointIndex && lTimePointIndex < mLabelLast
                             .getmTimePointIndex()) {
                         g.setColor(mLabelInterm.getColor());
                         g.fill(mLabelInterm.getRectangle());
                         g.setStroke(new BasicStroke(mLabelInterm.getLineWidth()));
-                        g.draw(mLabelInterm.getRectangle());
+                        g.draw(mRectangle);
                     }
                 } else if (mFirstLabelExists && !mLastLabelExists) {
                     if (lTimePointIndex == mLabelFirst.getmTimePointIndex()) {
                         g.setColor(mLabelFirst.getColor());
                         g.fill(mLabelFirst.getRectangle());
                         g.setStroke(new BasicStroke(mLabelFirst.getLineWidth()));
-                        g.draw(mLabelFirst.getRectangle());
+                        g.draw(mRectangle);
                     } else {
                         g.setColor(mLabelInterm.getColor());
                         g.fill(mLabelInterm.getRectangle());
                         g.setStroke(new BasicStroke(mLabelInterm.getLineWidth()));
-                        g.draw(mLabelInterm.getRectangle());
+                        g.draw(mRectangle);
                     }
                 }
                 else
@@ -147,18 +152,23 @@ public class StackSelectionLabel {
             @Override
             public void click(int i, int i1) {
                 if (mFirstLabelExists && !mLastLabelExists) {
-                    if (mLabelFirst.getRectangle().contains(i, i1)) {
-                        mLabelLast.setRectangle(mLabelFirst.getRectangle());
+                    if (mRectangle.contains(i, i1)) {
+                        mLabelLast.setRectangle(mRectangle);
                         mLabelLast.setTimePointIndex(mBdvHandle.getViewerPanel().getState().getCurrentTimepoint());
                         mLastLabelExists = true;
+                        mBdvHandle.getViewerPanel().getDisplay().repaint();
                     } else {
                         mFirstLabelExists = false;
-                        mLabelFirst.updateCoords(0, 0, 0, 0);
+                        mRectangle.setBounds(0,0,0,0);
+                        mBdvHandle.getViewerPanel().getDisplay().repaint();
+                        mLabelFirst.setRectangle(mRectangle);
                     }
                 } else if (mFirstLabelExists && mLastLabelExists) {
-                    if (!mLabelFirst.getRectangle().contains(i, i1)) {
+                    if (!mRectangle.contains(i, i1)) {
                         mFirstLabelExists = false;
                         mLastLabelExists = false;
+                        mRectangle.setBounds(0,0,0,0);
+                        mBdvHandle.getViewerPanel().getDisplay().repaint();
                         mLabelFirst.updateCoords(0, 0, 0, 0);
                         mLabelLast.updateCoords(0, 0, 0, 0);
                     }
@@ -203,6 +213,23 @@ public class StackSelectionLabel {
 
         //final Bdv bdv3D = BdvFunctions.show( img2, "greens");
         final Bdv bdv2D = BdvFunctions.show(img2, "reds", Bdv.options().is2D().inputTriggerConfig(conf));
+
+        bdv2D.getBdvHandle().getViewerPanel().addOverlayAnimator(new OverlayAnimator() {
+            @Override
+            public void paint(Graphics2D graphics2D, long l) {
+
+            }
+
+            @Override
+            public boolean isComplete() {
+                return false;
+            }
+
+            @Override
+            public boolean requiresRepaint() {
+                return false;
+            }
+        });
 
         StackSelectionLabel lStackSelectionLabel = new StackSelectionLabel(bdv2D.getBdvHandle());
         BdvFunctions.showOverlay(lStackSelectionLabel.mOverlay, "overlay", Bdv.options().addTo(bdv2D));
