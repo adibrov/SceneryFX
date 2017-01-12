@@ -29,31 +29,37 @@ public class StackSelectionLabel {
 
     private BdvHandle mBdvHandle;
     private DragBehaviour mDragBehaviour;
-    private RectangleLabel mLabelFirst;
-    private RectangleLabel mLabelLast;
-    private RectangleLabel mLabelInterm;
     private BdvOverlay mOverlay;
     private boolean mFirstLabelExists;
+    private int mFirstLabelTimePointIndex;
+    private int mLastLabelTimepointIndex;
+    private Color mFirstLabelColor;
+    private Color mLastLabelColor;
+    private Color mIntermLabelColor;
     private boolean mLastLabelExists;
     private Rectangle mRectangle;
     private int x0, y0, x1, y1;
     private ClickBehaviour mClickBehaviour;
+    private BasicStroke mLineWidth = new BasicStroke(2.0f);
 
     public StackSelectionLabel(BdvHandle pBdvHandle) {
+        this(pBdvHandle, new Color(0,1,0,0.5f), new Color(0,0,1,0.5f), new Color(0,1,1,0.3f));
+    }
+
+    public StackSelectionLabel(BdvHandle pBdvHandle, Color pFirstLabelColor, Color pLastLabelColor, Color
+            pIntermLabelColor) {
         x0 = 0;
         x1 = 0;
         y0 = 0;
         y1 = 0;
+
         this.mBdvHandle = pBdvHandle;
         this.mFirstLabelExists = false;
         this.mLastLabelExists = false;
         this.mRectangle = new Rectangle(0, 0, 0, 0);
-
-        mLabelFirst = new RectangleLabel();
-        mLabelLast = new RectangleLabel();
-        mLabelInterm = new RectangleLabel();
-        mLabelLast.setColor(new Color(0, 0, 1, 0.5f));
-        mLabelInterm.setColor(new Color(0, 1, 1, 0.3f));
+        this.mFirstLabelColor = pFirstLabelColor;
+        this.mLastLabelColor = pLastLabelColor;
+        this.mIntermLabelColor = pIntermLabelColor;
 
         this.mDragBehaviour = new DragBehaviour() {
             @Override
@@ -64,14 +70,9 @@ public class StackSelectionLabel {
                     x0 = i;
                     y0 = i1;
                     mRectangle.setBounds(x0, y0, 0, 0);
-                   // mLabelFirst.setRectangle(mRectangle);
+                    // mLabelFirst.setRectangle(mRectangle);
                     mBdvHandle.getViewerPanel().getDisplay().repaint();
                 }
-                else
-                {
-
-                }
-
             }
 
             @Override
@@ -90,9 +91,7 @@ public class StackSelectionLabel {
 
                 if (!mFirstLabelExists) {
                     mFirstLabelExists = true;
-                    mLabelFirst.setTimePointIndex(mBdvHandle.getViewerPanel().getState().getCurrentTimepoint());
-                    mLabelFirst.setRectangle(mRectangle);
-                    mLabelInterm.setRectangle(mRectangle);
+                    mFirstLabelTimePointIndex = mBdvHandle.getViewerPanel().getState().getCurrentTimepoint();
                     mBdvHandle.getViewerPanel().getDisplay().repaint();
                 }
 
@@ -104,43 +103,38 @@ public class StackSelectionLabel {
             protected void draw(Graphics2D g) {
                 int lTimePointIndex = info.getTimePointIndex();
                 if (mFirstLabelExists && mLastLabelExists) {
-                    if (lTimePointIndex == mLabelFirst.getmTimePointIndex()) {
-                        g.setColor(mLabelFirst.getColor());
-                        g.fill(mLabelFirst.getRectangle());
-                        g.setStroke(new BasicStroke(mLabelFirst.getLineWidth()));
+                    if (lTimePointIndex == mFirstLabelTimePointIndex) {
+                        g.setColor(mFirstLabelColor);
+                        g.fill(mRectangle);
+                        g.setStroke(mLineWidth);
                         g.draw(mRectangle);
-                    }
-                    else if (lTimePointIndex == mLabelLast.getmTimePointIndex()) {
-                        g.setColor(mLabelLast.getColor());
-                        g.fill(mLabelLast.getRectangle());
-                        g.setStroke(new BasicStroke(mLabelLast.getLineWidth()));
+                    } else if (lTimePointIndex == mLastLabelTimepointIndex) {
+                        g.setColor(mLastLabelColor);
+                        g.fill(mRectangle);
+                        g.setStroke(mLineWidth);
                         g.draw(mRectangle);
-                    }
-                    else if (mLabelFirst.getmTimePointIndex() < lTimePointIndex && lTimePointIndex < mLabelLast
-                            .getmTimePointIndex()) {
-                        g.setColor(mLabelInterm.getColor());
-                        g.fill(mLabelInterm.getRectangle());
-                        g.setStroke(new BasicStroke(mLabelInterm.getLineWidth()));
+                    } else if (mFirstLabelTimePointIndex < lTimePointIndex && lTimePointIndex < mLastLabelTimepointIndex) {
+                        g.setColor(mIntermLabelColor);
+                        g.fill(mRectangle);
+                        g.setStroke(mLineWidth);
                         g.draw(mRectangle);
                     }
                 } else if (mFirstLabelExists && !mLastLabelExists) {
-                    if (lTimePointIndex == mLabelFirst.getmTimePointIndex()) {
-                        g.setColor(mLabelFirst.getColor());
-                        g.fill(mLabelFirst.getRectangle());
-                        g.setStroke(new BasicStroke(mLabelFirst.getLineWidth()));
+                    if (lTimePointIndex == mFirstLabelTimePointIndex) {
+                        g.setColor(mFirstLabelColor);
+                        g.fill(mRectangle);
+                        g.setStroke(mLineWidth);
                         g.draw(mRectangle);
                     } else {
-                        g.setColor(mLabelInterm.getColor());
-                        g.fill(mLabelInterm.getRectangle());
-                        g.setStroke(new BasicStroke(mLabelInterm.getLineWidth()));
+                        g.setColor(mIntermLabelColor);
+                        g.fill(mRectangle);
+                        g.setStroke(mLineWidth);
                         g.draw(mRectangle);
                     }
-                }
-                else
-                {
-                    g.setColor(mLabelFirst.getColor());
+                } else {
+                    g.setColor(mFirstLabelColor);
                     g.fill(mRectangle);
-                    g.setStroke(new BasicStroke(mLabelFirst.getLineWidth()));
+                    g.setStroke(mLineWidth);
                     g.draw(mRectangle);
                 }
 
@@ -153,24 +147,25 @@ public class StackSelectionLabel {
             public void click(int i, int i1) {
                 if (mFirstLabelExists && !mLastLabelExists) {
                     if (mRectangle.contains(i, i1)) {
-                        mLabelLast.setRectangle(mRectangle);
-                        mLabelLast.setTimePointIndex(mBdvHandle.getViewerPanel().getState().getCurrentTimepoint());
+                        mLastLabelTimepointIndex = mBdvHandle.getViewerPanel().getState().getCurrentTimepoint();
+                        if (mLastLabelTimepointIndex < mFirstLabelTimePointIndex) {
+                            int aux = mLastLabelTimepointIndex;
+                            mLastLabelTimepointIndex = mFirstLabelTimePointIndex;
+                            mFirstLabelTimePointIndex = aux;
+                        }
                         mLastLabelExists = true;
                         mBdvHandle.getViewerPanel().getDisplay().repaint();
                     } else {
                         mFirstLabelExists = false;
-                        mRectangle.setBounds(0,0,0,0);
+                        mRectangle.setBounds(0, 0, 0, 0);
                         mBdvHandle.getViewerPanel().getDisplay().repaint();
-                        mLabelFirst.setRectangle(mRectangle);
                     }
                 } else if (mFirstLabelExists && mLastLabelExists) {
                     if (!mRectangle.contains(i, i1)) {
                         mFirstLabelExists = false;
                         mLastLabelExists = false;
-                        mRectangle.setBounds(0,0,0,0);
+                        mRectangle.setBounds(0, 0, 0, 0);
                         mBdvHandle.getViewerPanel().getDisplay().repaint();
-                        mLabelFirst.updateCoords(0, 0, 0, 0);
-                        mLabelLast.updateCoords(0, 0, 0, 0);
                     }
                 }
 
@@ -213,23 +208,6 @@ public class StackSelectionLabel {
 
         //final Bdv bdv3D = BdvFunctions.show( img2, "greens");
         final Bdv bdv2D = BdvFunctions.show(img2, "reds", Bdv.options().is2D().inputTriggerConfig(conf));
-
-        bdv2D.getBdvHandle().getViewerPanel().addOverlayAnimator(new OverlayAnimator() {
-            @Override
-            public void paint(Graphics2D graphics2D, long l) {
-
-            }
-
-            @Override
-            public boolean isComplete() {
-                return false;
-            }
-
-            @Override
-            public boolean requiresRepaint() {
-                return false;
-            }
-        });
 
         StackSelectionLabel lStackSelectionLabel = new StackSelectionLabel(bdv2D.getBdvHandle());
         BdvFunctions.showOverlay(lStackSelectionLabel.mOverlay, "overlay", Bdv.options().addTo(bdv2D));
