@@ -98,6 +98,36 @@ public class StackSelectionLabel {
             }
         };
 
+        this.mClickBehaviour = new ClickBehaviour() {
+            @Override
+            public void click(int i, int i1) {
+                if (mFirstLabelExists && !mLastLabelExists) {
+                    if (mRectangle.contains(i, i1)) {
+                        mLastLabelTimepointIndex = mBdvHandle.getViewerPanel().getState().getCurrentTimepoint();
+                        if (mLastLabelTimepointIndex < mFirstLabelTimePointIndex) {
+                            int aux = mLastLabelTimepointIndex;
+                            mLastLabelTimepointIndex = mFirstLabelTimePointIndex;
+                            mFirstLabelTimePointIndex = aux;
+                        }
+                        mLastLabelExists = true;
+                        mBdvHandle.getViewerPanel().getDisplay().repaint();
+                    } else {
+                        mFirstLabelExists = false;
+                        mRectangle.setBounds(0, 0, 0, 0);
+                        mBdvHandle.getViewerPanel().getDisplay().repaint();
+                    }
+                } else if (mFirstLabelExists && mLastLabelExists) {
+                    if (!mRectangle.contains(i, i1)) {
+                        mFirstLabelExists = false;
+                        mLastLabelExists = false;
+                        mRectangle.setBounds(0, 0, 0, 0);
+                        mBdvHandle.getViewerPanel().getDisplay().repaint();
+                    }
+                }
+
+            }
+        };
+
         this.mOverlay = new BdvOverlay() {
             @Override
             protected void draw(Graphics2D g) {
@@ -138,36 +168,6 @@ public class StackSelectionLabel {
                     g.draw(mRectangle);
                 }
 
-
-            }
-        };
-
-        this.mClickBehaviour = new ClickBehaviour() {
-            @Override
-            public void click(int i, int i1) {
-                if (mFirstLabelExists && !mLastLabelExists) {
-                    if (mRectangle.contains(i, i1)) {
-                        mLastLabelTimepointIndex = mBdvHandle.getViewerPanel().getState().getCurrentTimepoint();
-                        if (mLastLabelTimepointIndex < mFirstLabelTimePointIndex) {
-                            int aux = mLastLabelTimepointIndex;
-                            mLastLabelTimepointIndex = mFirstLabelTimePointIndex;
-                            mFirstLabelTimePointIndex = aux;
-                        }
-                        mLastLabelExists = true;
-                        mBdvHandle.getViewerPanel().getDisplay().repaint();
-                    } else {
-                        mFirstLabelExists = false;
-                        mRectangle.setBounds(0, 0, 0, 0);
-                        mBdvHandle.getViewerPanel().getDisplay().repaint();
-                    }
-                } else if (mFirstLabelExists && mLastLabelExists) {
-                    if (!mRectangle.contains(i, i1)) {
-                        mFirstLabelExists = false;
-                        mLastLabelExists = false;
-                        mRectangle.setBounds(0, 0, 0, 0);
-                        mBdvHandle.getViewerPanel().getDisplay().repaint();
-                    }
-                }
 
             }
         };
