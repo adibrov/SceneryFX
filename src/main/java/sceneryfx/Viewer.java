@@ -48,6 +48,8 @@ public class Viewer {
 
 
         BdvFunctions.showOverlay(mOverlay, "overlay", Bdv.options().addTo(bdv));
+
+
     }
 
     public static void main(String[] args) {
