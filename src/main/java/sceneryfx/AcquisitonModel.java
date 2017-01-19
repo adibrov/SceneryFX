@@ -43,10 +43,10 @@ public class AcquisitonModel {
     }
 
     public void addAcquisitionUnitWithLabel(AcquisitionUnit pAcquisitionUnit, Rectangle pRectangleLabel, int []
-            pLocation, int pDimZ){
+            pLocation, int plastLabelZ){
         mLabelRectangleMap.put(pRectangleLabel, pAcquisitionUnit);
-        for (int i = pLocation[2]; i < pDimZ; i++) {
-            mGeometry[i].add(pRectangleLabel);
+        for (int i = pLocation[2]; i < plastLabelZ + 1; i++) {
+            mGeometry[i].add(new Rectangle(pRectangleLabel));
         }
 
     }

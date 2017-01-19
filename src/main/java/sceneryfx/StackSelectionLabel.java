@@ -40,10 +40,27 @@ public class StackSelectionLabel {
     private Rectangle mRectangle;
     private int x0, y0, x1, y1;
     private ClickBehaviour mClickBehaviour;
+
+    public int getFirstLabelTimePointIndex() {
+        return mFirstLabelTimePointIndex;
+    }
+
+    public int getLastLabelTimepointIndex() {
+        return mLastLabelTimepointIndex;
+    }
+
     private BasicStroke mLineWidth = new BasicStroke(2.0f);
+
+    public Rectangle getRectangle() {
+        return mRectangle;
+    }
 
     public StackSelectionLabel(BdvHandle pBdvHandle) {
         this(pBdvHandle, new Color(0,1,0,0.5f), new Color(0,0,1,0.5f), new Color(0,1,1,0.3f));
+    }
+
+    public BdvOverlay getOverlay() {
+        return mOverlay;
     }
 
     public StackSelectionLabel(BdvHandle pBdvHandle, Color pFirstLabelColor, Color pLastLabelColor, Color
@@ -118,10 +135,7 @@ public class StackSelectionLabel {
                     }
                 } else if (mFirstLabelExists && mLastLabelExists) {
                     if (!mRectangle.contains(i, i1)) {
-                        mFirstLabelExists = false;
-                        mLastLabelExists = false;
-                        mRectangle.setBounds(0, 0, 0, 0);
-                        mBdvHandle.getViewerPanel().getDisplay().repaint();
+                        resetLabel();
                     }
                 }
 
@@ -186,6 +200,22 @@ public class StackSelectionLabel {
 
         mBdvHandle.getTriggerbindings().addBehaviourMap("beh", lBehMap);
         mBdvHandle.getTriggerbindings().addInputTriggerMap("map", lInputTriggerMap, "none");
+
+
+
+    }
+
+
+    public void resetLabel(){
+        mFirstLabelExists = false;
+        mLastLabelExists = false;
+        mRectangle.setBounds(0, 0, 0, 0);
+        mBdvHandle.getViewerPanel().getDisplay().repaint();
+    }
+    public boolean activeLabelExists(){
+        System.out.println("first label exists: " + mFirstLabelExists);
+        System.out.println("last label exists: " + mLastLabelExists);
+        return (this.mFirstLabelExists && this.mLastLabelExists);
     }
 
 

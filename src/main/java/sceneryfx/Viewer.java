@@ -17,6 +17,7 @@ public class Viewer {
     private AcquisitonModel mAcquisitionModel;
     private Bdv bdv;
     private BdvOverlay mOverlay;
+    private StackSelectionLabel mStackSelectionLabel;
 
     public Viewer(AcquisitonModel pAcquisitionModel){
         this.mAcquisitionModel = pAcquisitionModel;
@@ -27,16 +28,27 @@ public class Viewer {
             protected void draw(Graphics2D g) {
                 int i = info.getTimePointIndex();
                 for (Rectangle rect: mAcquisitionModel.getGeometry()[i]) {
+                    g.setColor(new  Color(1.0f,153.0f/255, 51.0f/255, 0.5f));
                     g.draw(rect);
+                    g.fill(rect);
                 }
             }
         };
+    }
+
+    public AcquisitonModel getAcquisitionModel() {
+        return mAcquisitionModel;
+    }
+
+    public StackSelectionLabel getStackSelectionLabel() {
+        return mStackSelectionLabel;
     }
 
     public void startViewer(){
 
         InputTriggerConfig conf = null;
         try {
+
             /* load input config from file */
             conf = new InputTriggerConfig(YamlConfigIO.read("./sandbox/src/main/img/bdvkeyconfig.yaml"));
         } catch (IllegalArgumentException | IOException e) {
@@ -44,9 +56,9 @@ public class Viewer {
         }
         this.bdv = BdvFunctions.show(mAcquisitionModel.getData(), "reds", Bdv.options().is2D().inputTriggerConfig
                 (conf));
+        this.mStackSelectionLabel = new StackSelectionLabel(bdv.getBdvHandle());
 
-
-
+        BdvFunctions.showOverlay(mStackSelectionLabel.getOverlay(), "overlay", Bdv.options().addTo(bdv));
         BdvFunctions.showOverlay(mOverlay, "overlay", Bdv.options().addTo(bdv));
 
 
