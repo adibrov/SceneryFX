@@ -3,7 +3,7 @@ package sceneryfx;
 import java.awt.*;
 
 /**
- * Created by dibrov on 18/01/17.
+ * Created by dibrov on 18/01/17.{}
  */
 public class ViewerControlHub {
 
@@ -15,14 +15,14 @@ public class ViewerControlHub {
         // Viewer
         Viewer lViewer = new Viewer(lAcquisitionModel);
 
-        AcquisitionUnit au1 = new AcquisitionUnit(new int[] {0,0,0});
-        AcquisitionUnit au2 = new AcquisitionUnit(new int[] {150,150,0});
+        AcquisitionUnit au1 = new AcquisitionUnit(new long[] {0,0,0});
+        AcquisitionUnit au2 = new AcquisitionUnit(new long[] {150,150,0});
 
 
         // Java fx panel
         JavaFXPanel.start(lViewer);
 
-        // Starting the viewer
+        // Starting theR viewer
         lViewer.startViewer();
 
 

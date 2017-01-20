@@ -8,6 +8,7 @@ import bdv.viewer.animate.OverlayAnimator;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import net.imglib2.img.Img;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import org.scijava.ui.behaviour.*;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -38,6 +39,7 @@ public class StackSelectionLabel {
     private Color mIntermLabelColor;
     private boolean mLastLabelExists;
     private Rectangle mRectangle;
+    private Rectangle mRealRectangle;
     private int x0, y0, x1, y1;
     private ClickBehaviour mClickBehaviour;
 
@@ -63,6 +65,10 @@ public class StackSelectionLabel {
         return mOverlay;
     }
 
+    public Rectangle getRealRectangle() {
+        return mRealRectangle;
+    }
+
     public StackSelectionLabel(BdvHandle pBdvHandle, Color pFirstLabelColor, Color pLastLabelColor, Color
             pIntermLabelColor) {
         x0 = 0;
@@ -74,6 +80,7 @@ public class StackSelectionLabel {
         this.mFirstLabelExists = false;
         this.mLastLabelExists = false;
         this.mRectangle = new Rectangle(0, 0, 0, 0);
+        this.mRealRectangle = new Rectangle(0,0,0,0);
         this.mFirstLabelColor = pFirstLabelColor;
         this.mLastLabelColor = pLastLabelColor;
         this.mIntermLabelColor = pIntermLabelColor;
@@ -128,6 +135,36 @@ public class StackSelectionLabel {
                         }
                         mLastLabelExists = true;
                         mBdvHandle.getViewerPanel().getDisplay().repaint();
+                        AffineTransform3D lCurrentTransform = new AffineTransform3D();
+                        mBdvHandle.getViewerPanel().getState().getViewerTransform(lCurrentTransform);
+                        double[] a = new double[3];
+                        double[] b = new double[3];
+                        a[0] = mRectangle.getX(); a[1] = mRectangle.getY(); a[2] = 0;
+                        b[0] = mRectangle.x + mRectangle.width; b[1] = mRectangle.height + mRectangle.y; b[2]
+                                = 0;
+
+
+                        double[] initReal = new double[3];
+                        double[] endReal = new double[3];
+
+
+
+
+
+                        lCurrentTransform.applyInverse(initReal, a);
+                        lCurrentTransform.applyInverse(endReal, b);
+                        mRealRectangle.setBounds((int)initReal[0], (int)initReal[1], (int)(endReal[0] - initReal[0]),
+                                (int)(endReal[1] -
+                                initReal[1]));
+                        System.out.println("rect x, y, w, h: " + a[0] + " " + a[1] + " "  + (
+                                b[0] - a[0]) + " " + (b[1] -
+                                b[1]));
+                        System.out.println("rect actual x, y, w, h: " + mRectangle.x + " " + mRectangle.y + " "  + (
+                                mRectangle.width) + " " + (mRectangle.height));
+
+                        System.out.println("real rect x, y, w, h: " + initReal[0] + " " + initReal[1] + " "  + (
+                                endReal[0] - initReal[0]) + " " + (endReal[1] -
+                                initReal[1]));
                     } else {
                         mFirstLabelExists = false;
                         mRectangle.setBounds(0, 0, 0, 0);

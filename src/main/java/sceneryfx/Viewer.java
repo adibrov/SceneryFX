@@ -4,7 +4,15 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvOverlay;
 import clearvolume.renderer.cleargl.overlay.Overlay;
+import com.android.dx.util.Unsigned;
 import javafx.util.Pair;
+import net.imglib2.*;
+import net.imglib2.Cursor;
+import net.imglib2.img.Img;
+import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.ui.TransformListener;
+import net.imglib2.view.Views;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
@@ -26,9 +34,13 @@ public class Viewer {
     private StackSelectionLabel mStackSelectionLabel;
     private MouseMotionListener mMouseMotionListener;
 
+    public Bdv getBdv() {
+        return bdv;
+    }
+
     public Viewer(AcquisitonModel pAcquisitionModel){
         this.mAcquisitionModel = pAcquisitionModel;
-        this.mColor = new  Color(1.0f,153.0f/255, 51.0f/255, 0.5f);
+        this.mColor = new Color(1.0f,153.0f/255, 51.0f/255, 0.5f);
 
         this.mMouseMotionListener = new MouseMotionListener() {
             @Override
@@ -63,12 +75,13 @@ public class Viewer {
                 for (int i = 0; i< lRectArray.size(); i++) {
                     if (i != 0) {
                         g.setColor(mColor);
+                        g.setStroke(new BasicStroke(1));
                         g.draw(lRectArray.get(i));
                         g.fill(lRectArray.get(i));
                     }
                     else{
                         g.setColor(mColor);
-                        g.setStroke(new BasicStroke(4));
+                        g.setStroke(new BasicStroke(10));
                         g.draw(lRectArray.get(i));
                     }
 
@@ -81,6 +94,8 @@ public class Viewer {
     public AcquisitonModel getAcquisitionModel() {
         return mAcquisitionModel;
     }
+
+
 
     public StackSelectionLabel getStackSelectionLabel() {
         return mStackSelectionLabel;
@@ -108,6 +123,16 @@ public class Viewer {
         BdvFunctions.showOverlay(mOverlay, "overlay", Bdv.options().addTo(bdv));
 
 
+        TransformListener<AffineTransform3D> tl = new TransformListener<AffineTransform3D>() {
+            @Override
+            public void transformChanged(AffineTransform3D affineTransform3D) {
+                System.out.println("changed");
+
+            }
+        };
+        bdv.getBdvHandle().getViewerPanel().addTransformListener(tl);
+
+
     }
 
     public static void main(String[] args) {
@@ -115,10 +140,11 @@ public class Viewer {
         Viewer v = new Viewer(am);
         v.startViewer();
 
-        AcquisitionUnit au1 = new AcquisitionUnit(new int[] {0,0,0});
-        AcquisitionUnit au2 = new AcquisitionUnit(new int[] {150,150,0});
+        AcquisitionUnit au1 = new AcquisitionUnit(new long[] {0,0,0});
+        AcquisitionUnit au2 = new AcquisitionUnit(new long[] {150,150,0});
 
-        am.addAcquisitionUnitWithLabel(au1, new Rectangle(au1.getLocation()[0], au1.getLocation()[1], au1.getDimX(),
+        am.addAcquisitionUnitWithLabel(au1, new Rectangle((int)au1.getLocation()[0], (int)au1.getLocation()[1],
+                au1.getDimX(),
                 au1.getDimY()), au1.getLocation(), au1.getDimZ());
     }
 

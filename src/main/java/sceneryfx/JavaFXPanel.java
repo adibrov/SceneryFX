@@ -57,18 +57,24 @@ public class JavaFXPanel extends Application {
         lAcquireButton.setOnAction(e -> {
             StackSelectionLabel ssl = mViewer.getStackSelectionLabel();
             System.out.println("Acquire click");
-            System.out.println("ssl test: " +ssl.activeLabelExists());
+            System.out.println("ssl test: " + ssl.activeLabelExists());
             if (ssl.activeLabelExists()) {
-                Rectangle rect = mViewer.getStackSelectionLabel().getRectangle();
+                Rectangle rect = mViewer.getStackSelectionLabel().getRealRectangle();
                 int z = ssl.getFirstLabelTimePointIndex();
                 int lastZ = ssl.getLastLabelTimepointIndex();
                 System.out.println("z to begin: " + z);
                 System.out.println("z ti end: " + lastZ);
-                int[] loc = new int[] {rect.x, rect.y, z};
-                AcquisitionUnit au = new AcquisitionUnit(loc);
-                mViewer.getAcquisitionModel().addAcquisitionUnitWithLabel(au, rect, loc, lastZ);
+                long[] loc = new long[]{rect.x, rect.y, z};
+
+                AcquisitionUnit au = AcquisitionUnit.getAcquisitionUnitWithRandomSubstack(loc, new long[]{rect.width,
+                        rect
+                                .height, lastZ - z + 1});
+                mViewer.getAcquisitionModel().addAcquisitionUnitWithLabel(au, mViewer.getStackSelectionLabel().getRectangle(), loc,
+                        lastZ);
                 System.out.println("inside");
                 ssl.resetLabel();
+                mViewer.getAcquisitionModel().setSubstack(loc, au.getSubstack());
+                mViewer.getBdv().getBdvHandle().getViewerPanel().requestRepaint();
 
 
             }
