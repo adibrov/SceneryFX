@@ -1,5 +1,7 @@
 package sceneryfx;
 
+import coremem.enums.NativeTypeEnum;
+
 import java.awt.*;
 
 /**
@@ -19,11 +21,18 @@ public class ViewerControlHub {
         AcquisitionUnit au2 = new AcquisitionUnit(new long[] {150,150,0});
 
 
-        // Java fx panel
-        JavaFXPanel.start(lViewer);
+
 
         // Starting theR viewer
         lViewer.startViewer();
+
+        // CVU
+        ClearVolumeUnit lClearVolumeUnit = new ClearVolumeUnit(NativeTypeEnum.UnsignedByte);
+        byte[] byteArr = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        lClearVolumeUnit.initializeAndShow(byteArr,3,3,3);
+
+        // Java fx panel
+        JavaFXPanel.start(lViewer, lClearVolumeUnit);
 
 
     }

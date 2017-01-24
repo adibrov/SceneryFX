@@ -9,8 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import net.imglib2.realtransform.AffineTransform3D;
 
 import java.awt.*;
+
+import static tools.RectangleTransform.transformRectangle;
 
 
 /**
@@ -19,6 +22,7 @@ import java.awt.*;
 public class JavaFXPanel extends Application {
 
     private Viewer mViewer;
+    private ClearVolumeUnit mCVu;
 
     public static void main(String[] args) {
         //   System.out.println("Hello World!");
@@ -26,11 +30,12 @@ public class JavaFXPanel extends Application {
 
     }
 
-    public JavaFXPanel(Viewer pViewer) {
+    public JavaFXPanel(Viewer pViewer, ClearVolumeUnit pCVu) {
         this.mViewer = pViewer;
+        this.mCVu = pCVu;
     }
 
-    public static void start(Viewer pViewer) {
+    public static void start(Viewer pViewer, ClearVolumeUnit pCVu) {
         new JFXPanel(); // initializes JavaFX environment
 
         Platform.runLater(new Runnable() {
@@ -38,7 +43,7 @@ public class JavaFXPanel extends Application {
             @Override
             public void run() {
                 Stage stage = new Stage();
-                JavaFXPanel lJavaFxPanel = new JavaFXPanel(pViewer);
+                JavaFXPanel lJavaFxPanel = new JavaFXPanel(pViewer, pCVu);
                 lJavaFxPanel.start(stage);
             }
         });
@@ -66,10 +71,16 @@ public class JavaFXPanel extends Application {
                 System.out.println("z ti end: " + lastZ);
                 long[] loc = new long[]{rect.x, rect.y, z};
 
-                AcquisitionUnit au = AcquisitionUnit.getAcquisitionUnitWithRandomSubstack(loc, new long[]{rect.width,
+                AcquisitionUnit au = AcquisitionUnit.getAcquisitionUnitWithRandomSubstack(loc, new long[]{rect.width - 1,
                         rect
-                                .height, lastZ - z + 1});
-                mViewer.getAcquisitionModel().addAcquisitionUnitWithLabel(au, mViewer.getStackSelectionLabel().getRectangle(), loc,
+                                .height - 1, lastZ - z + 1});
+
+                AffineTransform3D lAffine3D = new AffineTransform3D();
+                mViewer.getBdv().getBdvHandle().getViewerPanel().getState
+                        ().getViewerTransform(lAffine3D);
+                mViewer.getAcquisitionModel().addAcquisitionUnitWithLabel(au, transformRectangle(mViewer
+                                .getStackSelectionLabel().getRectangle(), lAffine3D.inverse())
+                        , loc,
                         lastZ);
                 System.out.println("inside");
                 ssl.resetLabel();
@@ -80,11 +91,21 @@ public class JavaFXPanel extends Application {
             }
         });
 
+        Button lCVButton = new Button("Show in CV");
+        lCVButton.setOnAction(e -> {
+            Rectangle rect = mViewer.getSelectedLabel();
+            if (rect == null) {
+                System.out.println("nothing to show");
+            } else {
+                mCVu.initializeAndShow(mViewer.getAcquisitionModel().getLabelRectangleMap().get(rect).getSubstack());
+            }
+        });
+
         VBox grid = new VBox();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setSpacing(10);
         grid.setAlignment(Pos.TOP_CENTER);
-        grid.getChildren().add(lAcquireButton);
+        grid.getChildren().addAll(lAcquireButton, lCVButton);
 
         Scene scene = new Scene(grid, windowSizeX, windowSizeY);
 
