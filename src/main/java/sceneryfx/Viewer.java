@@ -3,21 +3,26 @@ package sceneryfx;
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvOverlay;
+import ij.plugin.DragAndDrop;
+import javafx.geometry.Pos;
+import net.imagej.Position;
+import net.imglib2.Positionable;
+import net.imglib2.RealPoint;
+import net.imglib2.RealPositionable;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
-import org.scijava.ui.behaviour.BehaviourMap;
-import org.scijava.ui.behaviour.ClickBehaviour;
-import org.scijava.ui.behaviour.InputTriggerAdder;
-import org.scijava.ui.behaviour.InputTriggerMap;
+import org.scijava.ui.behaviour.*;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.dnd.DragSourceAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 
 import static tools.RectangleTransform.transformRectangle;
 
@@ -34,6 +39,7 @@ public class Viewer {
     private boolean mSelectionExists;
     private ClickBehaviour mSelectBehaviour;
     private Rectangle mSelectedLabel;
+    private DraggableComponent mJPanel;
 
     public Bdv getBdv() {
         return bdv;
@@ -59,6 +65,7 @@ public class Viewer {
                     ArrayList<Rectangle> lLabels = getAcquisitionModel().getGeometry()[lCurrentTimePoint];
                     Rectangle lRectToSelect = new Rectangle(0, 0, 0, 0);
                     int lRectToSelectArea = 100000000;
+
                     for (int i = 1; i < lLabels.size(); i++) {
                         rect = transformRectangle(lLabels.get(i), lAffine3D);
                         if (rect.contains(e.getX(), e.getY()) && lLabels.get(i).width * lLabels.get(i).height <
@@ -75,21 +82,24 @@ public class Viewer {
         this.mSelectBehaviour = new ClickBehaviour() {
             @Override
             public void click(int i, int i1) {
+                Rectangle rect;
+                AffineTransform3D lAffine3D = new AffineTransform3D();
+                getBdv().getBdvHandle().getViewerPanel().getState().getViewerTransform(lAffine3D);
+                int lCurrentTimePoint = bdv.getBdvHandle().getViewerPanel().getState().getCurrentTimepoint();
+                ArrayList<Rectangle> lLabels = getAcquisitionModel().getGeometry()[lCurrentTimePoint];
+                Rectangle lRectToSelect = new Rectangle(0, 0, 0, 0);
+                int lRectToSelectArea = 100000000;
+                ArrayList<Rectangle>[] lGeom = getAcquisitionModel().getGeometry();
+
 
                 if (!mSelectionExists) {
-                    Rectangle rect = new Rectangle();
-                    AffineTransform3D lAffine3D = new AffineTransform3D();
-                    getBdv().getBdvHandle().getViewerPanel().getState().getViewerTransform(lAffine3D);
-                    int lCurrentTimePoint = bdv.getBdvHandle().getViewerPanel().getState().getCurrentTimepoint();
-                    ArrayList<Rectangle> lLabels = getAcquisitionModel().getGeometry()[lCurrentTimePoint];
-                    Rectangle lRectToSelect = new Rectangle(0, 0, 0, 0);
-                    int lRectToSelectArea = 100000000;
+
                     for (int j = 1; j < lLabels.size(); j++) {
                         rect = transformRectangle(lLabels.get(j), lAffine3D);
                         if (rect.contains(i, i1) && lLabels.get(j).width * lLabels.get(j).height <
                                 lRectToSelectArea) {
                             mSelectionExists = true;
-                            lRectToSelect = lLabels.get(j);
+                            lRectToSelect = new Rectangle(lLabels.get(j));
                             lRectToSelectArea = lRectToSelect.height * lRectToSelect.width;
                         }
                     }
@@ -97,31 +107,39 @@ public class Viewer {
 
                     if (mSelectionExists) {
                         mSelectedLabel = lRectToSelect;
-                    }
-                    ArrayList<Rectangle>[] lGeom = getAcquisitionModel().getGeometry();
-
-                    AcquisitionUnit lAU = getAcquisitionModel().getLabelRectangleMap().get(lRectToSelect);
-                    if (mSelectionExists) {
+                        AcquisitionUnit lAU = getAcquisitionModel().getLabelRectangleMap().get(lRectToSelect);
                         for (int j = (int) lAU.getLocation()[2]; j < (int) (lAU.getLocation()[2] + lAU.getDimZ());
                              j++) {
-                            lGeom[j].set(0,lRectToSelect);
+                            lGeom[j].set(0, lRectToSelect);
+
                         }
+                        Rectangle rightRect = transformRectangle(lRectToSelect, lAffine3D);
+                        mJPanel.setBounds(rightRect);
+                        System.out.println("setting color");
+                        mJPanel.setLocation(rightRect.x, rightRect.y);
+                      //  mJPanel.setBackground(new Color(0, 255, 0));
+                        mJPanel.setVisible(true);
+                        mJPanel.setBackground(new Color(0,0,0,0.0f));
+                      //  mJPanel.setDragEnabled(true);
+                        mJPanel.setImg(getAcquisitionModel().getLabelRectangleMap().get(lRectToSelect).getSubstack());
+
                     }
-                }
-                else {
-                    mSelectionExists = false;
+                } else {
+                    mJPanel.setVisible(false);
+
+
+                    for (int j = 0; j < lGeom.length; j++) {
+                        lGeom[j].get(0).setBounds(0, 0, 0, 0);
+                    }
                     mSelectedLabel = null;
+                    mSelectionExists = false;
+
                 }
 
 
             }
 
         };
-
-
-
-
-
 
 
         mOverlay = new BdvOverlay() {
@@ -176,7 +194,49 @@ public class Viewer {
             e.printStackTrace();
         }
         this.bdv = BdvFunctions.show(mAcquisitionModel.getData(), "reds", Bdv.options().is2D().inputTriggerConfig
-                (conf));
+                (conf).preferredSize(1000,1000));
+
+//        bdv.getBdvHandle().getTriggerbindings().getConcatenatedBehaviourMap().remove("2d scroll translate");
+
+        Behaviour lScrollBehaviour = new ScrollBehaviour() {
+            @Override
+            public void scroll(double wheelRotation, boolean isHorizontal, int x, int y) {
+                AffineTransform3D lAffine3D = new AffineTransform3D();
+                bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform(lAffine3D);
+                float[] lPosOld = {x,y,0};
+                float[] lPosNew = {0,0,0};
+                lAffine3D.applyInverse(lPosNew, lPosOld);
+                Point p = bdv.getBdvHandle().getViewerPanel().getMousePosition(true);
+
+                synchronized ( lAffine3D )
+                {
+                    double d = -wheelRotation * 10;
+
+
+
+                    if ( isHorizontal  ){
+                        if (d < 0 && lPosNew[0] - d > 2000 || d >0 && lPosNew[0] - d < - 500) {
+                            d = 0.0;
+                        }
+                        lAffine3D.translate( d, 0, 0 );
+                        System.out.println("x and y is: " + lPosNew[0]+ " " + lPosNew[1]);
+
+
+                    }
+                    else {
+                        if (d < 0 && lPosNew[1] + d > 2000 ||d > 0 && lPosNew[1] - d < - 500) {
+                            d = 0.0;
+                        }
+                        lAffine3D.translate(0, d, 0);
+                        System.out.println("x and y is: " + lPosNew[0] + " "+lPosNew[1]);
+                    }
+                    bdv.getBdvHandle().getViewerPanel().transformChanged(lAffine3D);
+                }
+            }
+        };
+//        bdv.getBdvHandle().getTriggerbindings().getConcatenatedBehaviourMap().put("2d scroll translate", lScrollBehaviour);
+
+
         this.mStackSelectionLabel = new StackSelectionLabel(bdv.getBdvHandle());
 
 
@@ -205,6 +265,11 @@ public class Viewer {
         bdv.getBdvHandle().getViewerPanel().addTransformListener(tl);
         this.getBdv().getBdvHandle().getTriggerbindings().addBehaviourMap("beh1", lBehMap);
         this.getBdv().getBdvHandle().getTriggerbindings().addInputTriggerMap("map1", lInputTriggerMap, "none");
+
+        this.mJPanel = new DraggableComponent();
+
+        this.mJPanel.setVisible(false);
+        bdv.getBdvHandle().getViewerPanel().getDisplay().add(this.mJPanel);
 
 
     }

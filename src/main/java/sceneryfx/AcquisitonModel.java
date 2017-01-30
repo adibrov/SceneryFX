@@ -1,7 +1,11 @@
 package sceneryfx;
 
+import com.sun.javafx.webkit.CursorManagerImpl;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
 import javafx.util.Pair;
 import net.imglib2.*;
+import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
@@ -10,6 +14,7 @@ import net.imglib2.view.Views;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by dibrov on 18/01/17.
@@ -19,8 +24,38 @@ public class AcquisitonModel {
     private int mDimY;
     private int mDimZ;
     private Img mData;
+    private SampleSpace mSampleSpace;
     private ArrayList<Rectangle>[] mGeometry;
     private HashMap<Rectangle, AcquisitionUnit> mLabelRectangleMap;
+
+    public AcquisitonModel(SampleSpace pSampleSpace) {
+        this.mSampleSpace = pSampleSpace;
+        long[] dims = mSampleSpace.getDimensions();
+        mDimX = (int)dims[0];
+        mDimY = (int)dims[1];
+        mDimZ = (int)dims[2];
+
+
+        this.mData = new ArrayImgFactory().create(dims, new UnsignedByteType());
+        System.out.println("dimenstions of data image: " + dims[0] + " " + dims[1] + " " + dims[2]);
+        this.mGeometry = new ArrayList[mDimZ];
+        for (int i = 0; i < mDimZ; i++) {
+
+            mGeometry[i] = new ArrayList<>();
+            mGeometry[i].add(new Rectangle(0,0,0,0));
+        }
+        this.mLabelRectangleMap = new HashMap<>();
+        Cursor<UnsignedByteType> lCursor = mData.cursor();
+        Random lRandGen = new Random();
+        while (lCursor.hasNext()) {
+            lCursor.fwd();
+            lCursor.get().set(lRandGen.nextInt());
+        }
+    }
+
+    public SampleSpace getSampleSpace() {
+        return mSampleSpace;
+    }
 
     public ArrayList<Rectangle>[] getGeometry() {
         return mGeometry;
@@ -44,6 +79,28 @@ public class AcquisitonModel {
             mGeometry[i].add(new Rectangle(0,0,0,0));
         }
         this.mLabelRectangleMap = new HashMap<>();
+    }
+    public AcquisitonModel(String pPath) {
+        Img<UnsignedByteType> img;
+        try {
+            img = (Img<UnsignedByteType>) (new ImgOpener().openImgs(pPath).get
+                    (0));
+
+            mData = img;
+            mDimX = (int)img.dimension(0);
+            mDimY = (int)img.dimension(1);
+            mDimZ = (int)img.dimension(2);
+            this.mGeometry = new ArrayList[mDimZ];
+            for (int i = 0; i < mDimZ; i++) {
+
+                mGeometry[i] = new ArrayList<>();
+                mGeometry[i].add(new Rectangle(0,0,0,0));
+            }
+            this.mLabelRectangleMap = new HashMap<>();
+        } catch (ImgIOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void addAcquisitionUnitWithLabel(AcquisitionUnit pAcquisitionUnit, Rectangle pRectangleLabel, long[]

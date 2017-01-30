@@ -24,6 +24,7 @@ public class AcquisitionUnit {
     private int mDimY;
     private int mDimZ;
 
+
     public AcquisitionUnit(long[] pLocation, Img pSubstack, int pExposureTimeInMilliseconds, int
             pLaserPowerInMilliWatts,
                            double pTimestep) {
@@ -35,15 +36,23 @@ public class AcquisitionUnit {
         this.mDimX = (int) mSubstack.dimension(0);
         this.mDimY = (int) mSubstack.dimension(1);
         this.mDimZ = (int) mSubstack.dimension(2);
+
     }
 
-    public static AcquisitionUnit getAcquisitionUnitWithRandomSubstack(long[] pLocation, long[] pDimensions){
-        return new AcquisitionUnit(pLocation, getRandomStack((int)pDimensions[0], (int)pDimensions[1],
-                (int)pDimensions[2]), 100, 100, 0.0);
+    public static AcquisitionUnit getAcquisitionUnitWithRandomSubstack(long[] pLocation, long[] pDimensions) {
+        return new AcquisitionUnit(pLocation, getRandomStack((int) pDimensions[0], (int) pDimensions[1],
+                (int) pDimensions[2]), 100, 100, 0.0);
+    }
+
+    public static AcquisitionUnit getAcquisitionUnitFromSampleSpace(long[] pLocation, long[] pDimensions,
+                                                                    SampleSpace pSampleSpace) {
+        long[] pFin = {pLocation[0] + pDimensions[0] - 1, pLocation[1] + pDimensions[1] - 1, pLocation[2] +
+                pDimensions[2] - 1};
+        return new AcquisitionUnit(pLocation, pSampleSpace.getSubstack(pLocation, pFin), 100, 100, 0.0);
     }
 
     public AcquisitionUnit() {
-        this(new long[] {0,0,0}, getRandomStack(100, 100, 100), 100, 100, 0.0);
+        this(new long[]{0, 0, 0}, getRandomStack(100, 100, 100), 100, 100, 0.0);
     }
 
     public long[] getLocation() {
@@ -70,7 +79,7 @@ public class AcquisitionUnit {
         return mSubstack;
     }
 
-    private static Img getRandomStack(long pDimX, long pDimY, long pDimZ) {
+    public static Img getRandomStack(long pDimX, long pDimY, long pDimZ) {
         Random lRandom = new Random();
         Img<UnsignedByteType> lRandomSubstack = new ArrayImgFactory().create(new long[]{pDimX, pDimY, pDimZ},
                 new UnsignedByteType());

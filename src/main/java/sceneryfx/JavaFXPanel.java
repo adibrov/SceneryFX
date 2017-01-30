@@ -71,9 +71,9 @@ public class JavaFXPanel extends Application {
                 System.out.println("z ti end: " + lastZ);
                 long[] loc = new long[]{rect.x, rect.y, z};
 
-                AcquisitionUnit au = AcquisitionUnit.getAcquisitionUnitWithRandomSubstack(loc, new long[]{rect.width - 1,
-                        rect
-                                .height - 1, lastZ - z + 1});
+                AcquisitionUnit au = AcquisitionUnit.getAcquisitionUnitFromSampleSpace(loc, new long[]{rect
+                        .width- 1, rect.height - 1, lastZ - z + 1}, mViewer
+                        .getAcquisitionModel().getSampleSpace());
 
                 AffineTransform3D lAffine3D = new AffineTransform3D();
                 mViewer.getBdv().getBdvHandle().getViewerPanel().getState
