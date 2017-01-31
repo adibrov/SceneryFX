@@ -46,9 +46,9 @@ public class AcquisitionUnit {
 
     public static AcquisitionUnit getAcquisitionUnitFromSampleSpace(long[] pLocation, long[] pDimensions,
                                                                     SampleSpace pSampleSpace) {
-        long[] pFin = {pLocation[0] + pDimensions[0] - 1, pLocation[1] + pDimensions[1] - 1, pLocation[2] +
-                pDimensions[2] - 1};
-        return new AcquisitionUnit(pLocation, pSampleSpace.getSubstack(pLocation, pFin), 100, 100, 0.0);
+//        long[] pFin = {pLocation[0] + pDimensions[0], pLocation[1] + pDimensions[1] , pLocation[2] +
+//                pDimensions[2] };
+        return new AcquisitionUnit(pLocation, pSampleSpace.getSubstack(pLocation, pDimensions), 100, 100, 0.0);
     }
 
     public AcquisitionUnit() {

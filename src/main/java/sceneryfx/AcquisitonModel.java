@@ -6,15 +6,14 @@ import io.scif.img.ImgOpener;
 import javafx.util.Pair;
 import net.imglib2.*;
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by dibrov on 18/01/17.
@@ -27,8 +26,11 @@ public class AcquisitonModel {
     private SampleSpace mSampleSpace;
     private ArrayList<Rectangle>[] mGeometry;
     private HashMap<Rectangle, AcquisitionUnit> mLabelRectangleMap;
+    private boolean labelsAreVisible;
+
 
     public AcquisitonModel(SampleSpace pSampleSpace) {
+        this.labelsAreVisible = true;
         this.mSampleSpace = pSampleSpace;
         long[] dims = mSampleSpace.getDimensions();
         mDimX = (int)dims[0];
@@ -142,6 +144,8 @@ public class AcquisitonModel {
            // lTargetCursor.get().set(100);
         }
     }
+
+
     public static void main(String[] args) {
         AcquisitonModel lAcquisiitonModel = new AcquisitonModel(1000, 1000, 1000);
         AcquisitionUnit lAcquisitionUnit1 = new AcquisitionUnit();
@@ -167,4 +171,5 @@ public class AcquisitonModel {
 
         System.out.println(am);
     }
+
 }

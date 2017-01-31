@@ -72,7 +72,7 @@ public class JavaFXPanel extends Application {
                 long[] loc = new long[]{rect.x, rect.y, z};
 
                 AcquisitionUnit au = AcquisitionUnit.getAcquisitionUnitFromSampleSpace(loc, new long[]{rect
-                        .width- 1, rect.height - 1, lastZ - z + 1}, mViewer
+                        .width, rect.height, lastZ - z + 1}, mViewer
                         .getAcquisitionModel().getSampleSpace());
 
                 AffineTransform3D lAffine3D = new AffineTransform3D();
@@ -101,11 +101,15 @@ public class JavaFXPanel extends Application {
             }
         });
 
+        Button lSwitchLabels = new Button("Switch Labels");
+        lSwitchLabels.setOnAction(e -> {
+            mViewer.setLabelsVisible(!mViewer.labelsAreVisible());
+        });
         VBox grid = new VBox();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setSpacing(10);
         grid.setAlignment(Pos.TOP_CENTER);
-        grid.getChildren().addAll(lAcquireButton, lCVButton);
+        grid.getChildren().addAll(lAcquireButton, lCVButton, lSwitchLabels);
 
         Scene scene = new Scene(grid, windowSizeX, windowSizeY);
 

@@ -40,15 +40,24 @@ public class Viewer {
     private ClickBehaviour mSelectBehaviour;
     private Rectangle mSelectedLabel;
     private DraggableComponent mJPanel;
+    private boolean labelsAreVisible;
 
+
+    private Color lTransparentColor = new Color(0,0,0,0.0f);
     public Bdv getBdv() {
         return bdv;
+    }
+
+
+    public boolean labelsAreVisible() {
+        return labelsAreVisible;
     }
 
     public Viewer(AcquisitonModel pAcquisitionModel) {
         this.mAcquisitionModel = pAcquisitionModel;
         this.mColor = new Color(1.0f, 153.0f / 255, 51.0f / 255, 0.5f);
         this.mSelectionExists = false;
+        this.labelsAreVisible = true;
         this.mMouseMotionListener = new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -151,14 +160,14 @@ public class Viewer {
                     if (i != 0) {
                         AffineTransform3D lAffine3D = new AffineTransform3D();
                         info.getViewerTransform(lAffine3D);
-                        g.setColor(mColor);
+                        g.setColor(labelsAreVisible? mColor:lTransparentColor);
                         g.setStroke(new BasicStroke(1));
                         g.draw(transformRectangle(lRectArray.get(i), lAffine3D));
                         g.fill(transformRectangle(lRectArray.get(i), lAffine3D));
                     } else {
                         AffineTransform3D lAffine3D = new AffineTransform3D();
                         info.getViewerTransform(lAffine3D);
-                        g.setColor(mColor);
+                        g.setColor(labelsAreVisible?mColor:lTransparentColor);
                         g.setStroke(new BasicStroke(10));
                         g.draw(transformRectangle(lRectArray.get(i), lAffine3D));
                     }
@@ -169,6 +178,12 @@ public class Viewer {
         };
     }
 
+    public void setLabelsVisible(boolean flag) {
+        if (flag != labelsAreVisible) {
+            labelsAreVisible = flag;
+            getBdv().getBdvHandle().getViewerPanel().getDisplay().repaint();
+        }
+    }
     public Rectangle getSelectedLabel() {
         return mSelectedLabel;
     }
@@ -193,8 +208,10 @@ public class Viewer {
         } catch (IllegalArgumentException | IOException e) {
             e.printStackTrace();
         }
+
+        long[] dims = getAcquisitionModel().getSampleSpace().getDimensions();
         this.bdv = BdvFunctions.show(mAcquisitionModel.getData(), "reds", Bdv.options().is2D().inputTriggerConfig
-                (conf).preferredSize(1000,1000));
+                (conf).preferredSize((int)dims[0],(int)dims[1]));
 
 //        bdv.getBdvHandle().getTriggerbindings().getConcatenatedBehaviourMap().remove("2d scroll translate");
 

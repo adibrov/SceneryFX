@@ -41,6 +41,8 @@ public class SampleSpace {
         mDimY = lDimOfFullSpace[1];
         mDimZ = lDimOfFullSpace[2];
 
+        System.out.println("got an image of dims: " + mDimX + " " + mDimY + " " + mDimZ);
+
         this.mData = new ArrayImgFactory().create(lDimOfFullSpace, new UnsignedByteType());
         RandomAccess<UnsignedByteType> lRandIn = pDataImg.randomAccess();
         RandomAccess<UnsignedByteType> lRandOut = mData.randomAccess();
@@ -92,23 +94,42 @@ public class SampleSpace {
         return null;
     }
 
-    public Img getSubstack(long[] pInit, long[] pFinal){
+    public Img getSubstack(long[] pInit, long[] pDimensions){
 
 //        long[] pInitCheck = {max(pInit[0], 0), max(pInit[1], 1), max(pInit[2], 2)};
 //        long[] pFinalCheck = {min(pFinal[0], 0), min(pFinal[1], 1), min(pFinal[2], 2)};
 
-        long[] dims = {pFinal[0] - pInit[0] + 1, pFinal[1] - pInit[1] + 1, pFinal[2] - pInit[2] + 1};
+      //  long[] dims = {pFinal[0] - pInit[0] + 1, pFinal[1] - pInit[1] + 1, pFinal[2] - pInit[2] + 1};
 
-        Img imgOut = new ArrayImgFactory().create(dims, new UnsignedByteType());
+        Img imgOut = new ArrayImgFactory().create(pDimensions, new UnsignedByteType());
+//        long[] lFinal = {pInit[0] + pDim[0] - 1, pInit[1] + pDim[1] - 1, pInit[2] + pDim[2] - 1};
 
-        IterableInterval img = Views.interval(mData, pInit, pFinal);
-        Cursor<UnsignedByteType> lCursor = imgOut.localizingCursor();
-        RandomAccess<UnsignedByteType> lRa = mData.randomAccess();
+//
+//        System.out.println("pInit are: " + pInit[0] + " " + pInit[1] + " " + pInit[2]);
+//        System.out.println("pFinal are: " + pFinal[0] + " " + pFinal[1] + " " + pFinal[2]);
+//        System.out.println("dims are: " + dims[0] + " " + dims[1] + " " + dims[2]);
 
+        IterableInterval img = Views.offsetInterval(mData, pInit, pDimensions);
+        Cursor<UnsignedByteType> lCursor = img.localizingCursor();
+        RandomAccess<UnsignedByteType> lRa = imgOut.randomAccess();
+
+        System.out.println("img dims: " + img.dimension(0) + " " + img.dimension(1) + " " + img.dimension(2));
+        System.out.println("imgOut dims: " + imgOut.dimension(0) + " " + imgOut.dimension(1) + " " + imgOut
+                .dimension(2));
+
+        int count = 0;
         while (lCursor.hasNext()) {
             lCursor.fwd();
+            count += 1;
+
+//            if (count < 20) {
+//                System.out.println("count is:" + count);
+//                System.out.println("cursor pos x y z: " + lCursor.getIntPosition(0) + " " + lCursor.getIntPosition(1) +
+//                        " " + lCursor.getIntPosition(2));
+//            }
             lRa.setPosition(lCursor);
-            lCursor.get().set(lRa.get());
+          //  lCursor.get().set(lRa.get());
+            lRa.get().set(lCursor.get());
 
         }
 
